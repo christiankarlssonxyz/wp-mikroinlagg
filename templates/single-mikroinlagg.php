@@ -38,7 +38,10 @@ if ( have_posts() ) :
     <a href="<?php echo esc_url( get_post_type_archive_link( 'mikroinlagg' ) ); ?>" class="topbar-home mikro-back-link">&larr; Alla mikroinlägg</a>
 </div>
 
-<div class="mikro-single-wrap">
+<section class="container">
+<div class="layout-wrapper" style="margin-top:32px">
+<div class="main-content-area">
+<div class="mikro-single-wrap" style="max-width:100%;margin:0;padding:0">
 
     <article class="mikro-single-card" id="post-<?php the_ID(); ?>">
 
@@ -127,6 +130,70 @@ if ( have_posts() ) :
     </article>
 
 </div><!-- .mikro-single-wrap -->
+</div><!-- .main-content-area -->
+
+<aside class="sidebar">
+    <?php
+    $latest_q = new WP_Query( [
+        'post_type'           => 'post',
+        'posts_per_page'      => 5,
+        'orderby'             => 'date',
+        'order'               => 'DESC',
+        'ignore_sticky_posts' => true,
+    ] );
+    if ( $latest_q->have_posts() ) : ?>
+    <div class="sidebar-widget topic-sidebar-latest">
+        <h3>Senaste inlägg</h3>
+        <ul class="topic-sidebar-list">
+            <?php while ( $latest_q->have_posts() ) : $latest_q->the_post();
+                $pt = get_the_terms( get_the_ID(), 'topic' );
+                $tn = ( ! is_wp_error( $pt ) && ! empty( $pt ) ) ? $pt[0]->name : '';
+            ?>
+            <li>
+                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                <span class="sidebar-post-meta"><?php echo get_the_date(); ?><?php if ( $tn ) : ?> &middot; <?php echo esc_html( $tn ); ?><?php endif; ?></span>
+            </li>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </ul>
+    </div>
+    <?php endif; ?>
+
+    <?php
+    $mikro_q = new WP_Query( [
+        'post_type'      => 'mikroinlagg',
+        'posts_per_page' => 5,
+        'post_status'    => 'publish',
+        'post__not_in'   => [ get_the_ID() ],
+    ] );
+    if ( $mikro_q->have_posts() ) : ?>
+    <div class="sidebar-widget topic-sidebar-latest">
+        <h3>Fler mikroinlägg</h3>
+        <ul class="topic-sidebar-list">
+            <?php while ( $mikro_q->have_posts() ) : $mikro_q->the_post();
+                $ts    = get_post_time( 'U', false, get_the_ID() );
+                $label = mikro_time_ago_sv( $ts );
+            ?>
+            <li>
+                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                <span class="sidebar-post-meta"><?php echo esc_html( $label ); ?></span>
+            </li>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </ul>
+    </div>
+    <?php endif; ?>
+
+    <?php
+    if ( function_exists( 'wpblogtree_sidebar_newsletter_widget' ) ) {
+        wpblogtree_sidebar_newsletter_widget();
+    }
+    if ( function_exists( 'wpblogtree_sidebar_social_widget' ) ) {
+        wpblogtree_sidebar_social_widget();
+    }
+    ?>
+</aside>
+
+</div><!-- .layout-wrapper -->
+</section>
 
 <script>
 (function() {
