@@ -133,6 +133,23 @@ if ( have_posts() ) :
 </div><!-- .main-content-area -->
 
 <aside class="sidebar">
+
+    <!-- Alltid synlig Mikroinlägg-widget -->
+    <div class="sidebar-widget mikro-sidebar-nav">
+        <div class="mikro-widget-header" style="margin:-20px -20px 16px;border-radius:12px 12px 0 0;padding:12px 16px">
+            <span class="mikro-widget-title">Mikroinlägg</span>
+            <span class="mikro-widget-logo" aria-hidden="true">m</span>
+        </div>
+        <?php if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) : ?>
+        <a href="<?php echo esc_url( admin_url( 'admin.php?page=mikro-new' ) ); ?>" class="mikro-widget-new-btn" style="margin:0 -20px 16px;display:block">
+            + Skriv nytt mikroinlägg
+        </a>
+        <?php endif; ?>
+        <a href="<?php echo esc_url( get_post_type_archive_link( 'mikroinlagg' ) ); ?>" class="sidebar-post-meta" style="font-size:13px">
+            &larr; Alla mikroinlägg
+        </a>
+    </div>
+
     <?php
     $latest_q = new WP_Query( [
         'post_type'           => 'post',
