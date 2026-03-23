@@ -4,17 +4,26 @@
  */
 get_header();
 
-$paged = (int) get_query_var( 'paged' ) ?: 1;
+$paged       = (int) get_query_var( 'paged' ) ?: 1;
+$hero_color  = get_option( 'mikro_hero_color',       '#0073aa' );
+$hero_heading     = get_option( 'mikro_hero_heading',     'Mikroinlägg' );
+$hero_subtitle    = get_option( 'mikro_hero_subtitle',    'MIKROINLÄGG' );
+$hero_description = get_option( 'mikro_hero_description', 'Korta tankar, länkar och uppdateringar.' );
+$color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
 ?>
 
 <section class="container">
 
-    <div class="mikro-archive-header">
-        <h1 class="mikro-archive-title">
-            <span class="mikro-archive-logo" aria-hidden="true">m</span>
-            Mikroinlägg
+    <div class="taxonomy-header" <?php echo $color_style; ?>>
+        <?php if ( $hero_subtitle ) : ?>
+            <p class="taxonomy-subtitle"><?php echo esc_html( $hero_subtitle ); ?></p>
+        <?php endif; ?>
+        <h1 class="taxonomy-title taxonomy-title--center">
+            <?php echo esc_html( $hero_heading ); ?>
         </h1>
-        <p class="mikro-archive-desc">Korta tankar, länkar och uppdateringar.</p>
+        <?php if ( $hero_description ) : ?>
+            <p class="taxonomy-description"><?php echo esc_html( $hero_description ); ?></p>
+        <?php endif; ?>
     </div>
 
     <div class="mikro-archive-feed">

@@ -4,41 +4,6 @@
 
 /* ── Archive ────────────────────────────────────────────────────────────────*/
 
-.mikro-archive-header {
-    text-align: center;
-    padding: 40px 20px 20px;
-}
-
-.mikro-archive-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0 0 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.mikro-archive-logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: #2d3748;
-    color: #fff;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.mikro-archive-desc {
-    color: #666;
-    font-size: 15px;
-    margin: 0;
-}
-
 .mikro-archive-feed {
     max-width: 680px;
     margin: 0 auto;

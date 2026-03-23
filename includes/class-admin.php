@@ -6,9 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Mikro_Admin {
 
     public static function init(): void {
-        add_action( 'admin_menu',              [ __CLASS__, 'add_menu' ] );
-        add_action( 'admin_post_mikro_save',   [ __CLASS__, 'handle_save' ] );
-        add_action( 'admin_enqueue_scripts',   [ __CLASS__, 'enqueue_assets' ] );
+        add_action( 'admin_menu',                      [ __CLASS__, 'add_menu' ] );
+        add_action( 'admin_post_mikro_save',           [ __CLASS__, 'handle_save' ] );
+        add_action( 'admin_post_mikro_save_settings',  [ __CLASS__, 'handle_save_settings' ] );
+        add_action( 'admin_enqueue_scripts',           [ __CLASS__, 'enqueue_assets' ] );
     }
 
     // ── Menu ─────────────────────────────────────────────────────────────────
@@ -40,13 +41,22 @@ class Mikro_Admin {
             'edit_posts',
             'edit.php?post_type=mikroinlagg'
         );
+
+        add_submenu_page(
+            'mikro-new',
+            'Inställningar – Mikroinlägg',
+            'Inställningar',
+            'manage_options',
+            'mikro-settings',
+            [ __CLASS__, 'render_settings_page' ]
+        );
     }
 
     // ── Assets ───────────────────────────────────────────────────────────────
 
     public static function enqueue_assets( string $hook ): void {
-        $is_mikro_page = ( $hook === 'toplevel_page_mikro-new' );
-        if ( ! $is_mikro_page ) {
+        $mikro_hooks = [ 'toplevel_page_mikro-new', 'mikroinlagg_page_mikro-settings' ];
+        if ( ! in_array( $hook, $mikro_hooks, true ) ) {
             return;
         }
         wp_enqueue_style(
@@ -55,13 +65,19 @@ class Mikro_Admin {
             [],
             MIKRO_VERSION
         );
-        wp_enqueue_script(
-            'wp-mikroinlagg-admin',
-            MIKRO_URL . 'assets/js/admin.js',
-            [],
-            MIKRO_VERSION,
-            true
-        );
+        if ( $hook === 'toplevel_page_mikro-new' ) {
+            wp_enqueue_script(
+                'wp-mikroinlagg-admin',
+                MIKRO_URL . 'assets/js/admin.js',
+                [],
+                MIKRO_VERSION,
+                true
+            );
+        }
+        if ( $hook === 'mikroinlagg_page_mikro-settings' ) {
+            wp_enqueue_style( 'wp-color-picker' );
+            wp_enqueue_script( 'wp-color-picker' );
+        }
     }
 
     // ── Render form ───────────────────────────────────────────────────────────
@@ -387,6 +403,170 @@ class Mikro_Admin {
         update_post_meta( $post_id, 'mikro_pinned',    0 );
 
         wp_safe_redirect( add_query_arg( 'mikro_saved', $post_id, $redirect_base ) );
+        exit;
+    }
+
+    // ── Settings page ─────────────────────────────────────────────────────────
+
+    public static function render_settings_page(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Behörighet saknas.' );
+        }
+
+        $color       = get_option( 'mikro_hero_color',       '#0073aa' );
+        $heading     = get_option( 'mikro_hero_heading',     'Mikroinlägg' );
+        $subtitle    = get_option( 'mikro_hero_subtitle',    'MIKROINLÄGG' );
+        $description = get_option( 'mikro_hero_description', 'Korta tankar, länkar och uppdateringar.' );
+
+        $message = '';
+        if ( isset( $_GET['mikro_settings_saved'] ) ) {
+            $message = '<div class="notice notice-success is-dismissible"><p>Inställningarna sparades.</p></div>';
+        }
+        ?>
+        <div class="wrap mikro-admin-wrap">
+
+            <div class="mikro-admin-header">
+                <div class="mikro-admin-logo">m</div>
+                <h1 class="mikro-admin-title">Inställningar – Mikroinlägg</h1>
+            </div>
+
+            <?php echo $message; ?>
+
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="background:#fff;border:1px solid #dde1e7;border-top:none;border-radius:0 0 8px 8px;padding:28px;max-width:600px">
+                <input type="hidden" name="action" value="mikro_save_settings">
+                <?php wp_nonce_field( 'mikro_save_settings', 'mikro_settings_nonce' ); ?>
+
+                <h2 style="margin-top:0;font-size:16px;border-bottom:1px solid #eee;padding-bottom:12px;margin-bottom:20px">Hero-sektion (arkivsidan)</h2>
+
+                <!-- Förhandsgranskning -->
+                <div id="mikro-hero-preview" style="
+                    background: linear-gradient(to bottom, <?php echo esc_attr( $color ); ?>55, transparent);
+                    border-top: 2px solid <?php echo esc_attr( $color ); ?>;
+                    border-bottom: 2px solid <?php echo esc_attr( $color ); ?>;
+                    text-align: center;
+                    padding: 32px 20px;
+                    border-radius: 6px;
+                    margin-bottom: 24px;
+                    transition: background 0.3s, border-color 0.3s;
+                ">
+                    <p style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:<?php echo esc_attr( $color ); ?>;margin:0 0 4px" id="preview-subtitle"><?php echo esc_html( $subtitle ); ?></p>
+                    <h3 style="font-size:26px;margin:0 0 6px;font-weight:700" id="preview-heading"><?php echo esc_html( $heading ); ?></h3>
+                    <p style="color:#666;font-size:14px;margin:0" id="preview-description"><?php echo esc_html( $description ); ?></p>
+                </div>
+
+                <!-- Färg -->
+                <div class="mikro-field-group">
+                    <label class="mikro-label" for="mikro-hero-color">Gradientfärg</label>
+                    <input
+                        type="text"
+                        id="mikro-hero-color"
+                        name="mikro_hero_color"
+                        value="<?php echo esc_attr( $color ); ?>"
+                        class="mikro-color-picker"
+                        data-default-color="#0073aa"
+                    >
+                    <p class="description" style="margin-top:6px">Väljer topfärg i hero-gradienten. Samma princip som ämnes-sidornas temafärg.</p>
+                </div>
+
+                <!-- Rubrik -->
+                <div class="mikro-field-group" style="margin-top:16px">
+                    <label class="mikro-label" for="mikro-hero-heading">Rubrik</label>
+                    <input
+                        type="text"
+                        id="mikro-hero-heading"
+                        name="mikro_hero_heading"
+                        value="<?php echo esc_attr( $heading ); ?>"
+                        class="mikro-input"
+                    >
+                </div>
+
+                <!-- Etikett ovan rubrik -->
+                <div class="mikro-field-group" style="margin-top:16px">
+                    <label class="mikro-label" for="mikro-hero-subtitle">Etikett (ovan rubrik, versaler)</label>
+                    <input
+                        type="text"
+                        id="mikro-hero-subtitle"
+                        name="mikro_hero_subtitle"
+                        value="<?php echo esc_attr( $subtitle ); ?>"
+                        class="mikro-input"
+                    >
+                </div>
+
+                <!-- Beskrivning -->
+                <div class="mikro-field-group" style="margin-top:16px">
+                    <label class="mikro-label" for="mikro-hero-description">Beskrivning</label>
+                    <input
+                        type="text"
+                        id="mikro-hero-description"
+                        name="mikro_hero_description"
+                        value="<?php echo esc_attr( $description ); ?>"
+                        class="mikro-input"
+                    >
+                </div>
+
+                <div style="margin-top:24px">
+                    <button type="submit" class="button button-primary mikro-btn-publish">Spara inställningar</button>
+                </div>
+            </form>
+
+        </div>
+
+        <script>
+        jQuery(function($) {
+            // Aktivera WP color picker
+            $('.mikro-color-picker').wpColorPicker({
+                change: function(event, ui) {
+                    var color = ui.color.toString();
+                    updatePreview(color);
+                },
+                clear: function() {
+                    updatePreview('#0073aa');
+                }
+            });
+
+            function updatePreview(color) {
+                var hex55 = color + '55';
+                $('#mikro-hero-preview').css({
+                    'background': 'linear-gradient(to bottom, ' + hex55 + ', transparent)',
+                    'border-top-color': color,
+                    'border-bottom-color': color
+                });
+                $('#mikro-hero-preview #preview-subtitle').css('color', color);
+            }
+
+            // Live-förhandsgranskning av textfält
+            $('#mikro-hero-heading').on('input', function() {
+                $('#preview-heading').text($(this).val() || 'Mikroinlägg');
+            });
+            $('#mikro-hero-subtitle').on('input', function() {
+                $('#preview-subtitle').text($(this).val());
+            });
+            $('#mikro-hero-description').on('input', function() {
+                $('#preview-description').text($(this).val());
+            });
+        });
+        </script>
+        <?php
+    }
+
+    public static function handle_save_settings(): void {
+        if (
+            ! isset( $_POST['mikro_settings_nonce'] ) ||
+            ! wp_verify_nonce( $_POST['mikro_settings_nonce'], 'mikro_save_settings' )
+        ) {
+            wp_die( 'Säkerhetsfel.' );
+        }
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Behörighet saknas.' );
+        }
+
+        $color = sanitize_hex_color( $_POST['mikro_hero_color'] ?? '' ) ?: '#0073aa';
+        update_option( 'mikro_hero_color',       $color );
+        update_option( 'mikro_hero_heading',     sanitize_text_field( $_POST['mikro_hero_heading']     ?? 'Mikroinlägg' ) );
+        update_option( 'mikro_hero_subtitle',    sanitize_text_field( $_POST['mikro_hero_subtitle']    ?? 'MIKROINLÄGG' ) );
+        update_option( 'mikro_hero_description', sanitize_text_field( $_POST['mikro_hero_description'] ?? '' ) );
+
+        wp_safe_redirect( add_query_arg( 'mikro_settings_saved', '1', admin_url( 'admin.php?page=mikro-settings' ) ) );
         exit;
     }
 }
