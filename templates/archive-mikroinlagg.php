@@ -58,42 +58,61 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
             ?>
                 <article class="mikro-card" id="post-<?php the_ID(); ?>">
 
-                    <div class="mikro-card-meta">
-                        <span><?php echo esc_html( $time_label ); ?></span>
+                    <div class="mikro-card-row">
 
-                        <?php if ( $amne ) : ?>
-                            <a href="<?php echo esc_url( get_term_link( $amne ) ); ?>" class="mikro-badge mikro-badge-amne">
-                                <?php echo esc_html( $amne->name ); ?>
-                            </a>
-                        <?php endif; ?>
+                        <!-- Avatar = plattformens ikon -->
+                        <div class="mikro-card-avatar-col">
+                            <?php if ( $platform ) :
+                                $platform_url = get_term_link( $platform );
+                            ?>
+                                <a href="<?php echo esc_url( $platform_url ); ?>" tabindex="-1" aria-hidden="true">
+                                    <?php echo mikro_platform_avatar( $platform ); ?>
+                                </a>
+                            <?php else : ?>
+                                <?php echo mikro_platform_avatar( null ); ?>
+                            <?php endif; ?>
+                        </div>
 
-                        <?php if ( $platform ) :
-                            $slug = sanitize_title( $platform->name );
-                            $icon = mikro_platform_icon( $slug );
-                        ?>
-                            <a href="<?php echo esc_url( get_term_link( $platform ) ); ?>" class="mikro-badge mikro-badge-platform">
-                                <?php echo $icon; ?>
-                                <?php echo esc_html( $platform->name ); ?>
-                            </a>
-                        <?php endif; ?>
-                    </div>
+                        <!-- Innehåll -->
+                        <div class="mikro-card-body">
 
-                    <?php if ( get_the_title() ) : ?>
-                        <h2 class="mikro-card-title">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h2>
-                    <?php endif; ?>
+                            <div class="mikro-card-top">
+                                <span class="mikro-card-author"><?php echo esc_html( get_the_author() ); ?></span>
+                                <span class="mikro-card-dot" aria-hidden="true">&middot;</span>
+                                <span class="mikro-card-time"><?php echo esc_html( $time_label ); ?></span>
+                                <?php if ( $platform ) : ?>
+                                    <span class="mikro-card-dot" aria-hidden="true">&middot;</span>
+                                    <a href="<?php echo esc_url( get_term_link( $platform ) ); ?>" class="mikro-card-platform-name">
+                                        <?php echo mikro_platform_icon( sanitize_title( $platform->name ), 12 ); ?>
+                                        <?php echo esc_html( $platform->name ); ?>
+                                    </a>
+                                <?php endif; ?>
+                                <?php if ( $amne ) : ?>
+                                    <a href="<?php echo esc_url( get_term_link( $amne ) ); ?>" class="mikro-badge mikro-badge-amne" style="margin-left:auto">
+                                        <?php echo esc_html( $amne->name ); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
 
-                    <div class="mikro-card-content">
-                        <?php echo wp_kses_post( wpautop( get_the_content() ) ); ?>
-                    </div>
+                            <?php if ( get_the_title() ) : ?>
+                                <h2 class="mikro-card-title">
+                                    <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                </h2>
+                            <?php endif; ?>
 
-                    <?php if ( $originallank ) : ?>
-                        <a href="<?php echo esc_url( $originallank ); ?>" class="mikro-card-link" target="_blank" rel="noopener noreferrer">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                            Originalinlägg
-                        </a>
-                    <?php endif; ?>
+                            <div class="mikro-card-content">
+                                <?php echo wp_kses_post( wpautop( get_the_content() ) ); ?>
+                            </div>
+
+                            <?php if ( $originallank ) : ?>
+                                <a href="<?php echo esc_url( $originallank ); ?>" class="mikro-card-link" target="_blank" rel="noopener noreferrer">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Originalinlägg
+                                </a>
+                            <?php endif; ?>
+
+                        </div><!-- .mikro-card-body -->
+                    </div><!-- .mikro-card-row -->
 
                 </article>
 
