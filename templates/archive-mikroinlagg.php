@@ -26,17 +26,20 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
         <?php endif; ?>
     </div>
 
-    <div class="mikro-archive-feed">
+    <div class="layout-wrapper" style="margin-top:32px">
+
+        <!-- ── Flöde ── -->
+        <div class="main-content-area">
+        <div class="mikro-archive-feed">
 
         <?php if ( have_posts() ) : ?>
 
             <?php while ( have_posts() ) : the_post();
-                $amnen       = get_the_terms( get_the_ID(), 'mikro_amne' );
-                $plattformar = get_the_terms( get_the_ID(), 'mikro_plattform' );
-                $taggar      = get_the_terms( get_the_ID(), 'mikro_taggar' );
+                $amnen        = get_the_terms( get_the_ID(), 'mikro_amne' );
+                $plattformar  = get_the_terms( get_the_ID(), 'mikro_plattform' );
                 $originallank = get_post_meta( get_the_ID(), 'mikro_originallank', true );
-                $timestamp   = get_post_time( 'U', false, get_the_ID() );
-                $time_label  = mikro_time_ago_sv( $timestamp );
+                $timestamp    = get_post_time( 'U', false, get_the_ID() );
+                $time_label   = mikro_time_ago_sv( $timestamp );
 
                 $amne     = ( ! is_wp_error( $amnen )       && $amnen )       ? $amnen[0]       : null;
                 $platform = ( ! is_wp_error( $plattformar ) && $plattformar ) ? $plattformar[0] : null;
@@ -101,7 +104,61 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
             <p>Inga mikroinlägg publicerade ännu.</p>
         <?php endif; ?>
 
-    </div><!-- .mikro-archive-feed -->
+        </div><!-- .mikro-archive-feed -->
+        </div><!-- .main-content-area -->
+
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+
+            <div class="sidebar-widget mikro-sidebar-nav">
+                <div class="mikro-widget-header" style="margin:-20px -20px 16px;border-radius:12px 12px 0 0;padding:12px 16px">
+                    <span class="mikro-widget-title">Mikroinlägg</span>
+                    <span class="mikro-widget-logo" aria-hidden="true">m</span>
+                </div>
+                <?php if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) : ?>
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=mikro-new' ) ); ?>" class="mikro-widget-new-btn" style="margin:0 -20px 16px;display:block">
+                    + Skriv nytt mikroinlägg
+                </a>
+                <?php endif; ?>
+            </div>
+
+            <?php
+            $latest_q = new WP_Query( [
+                'post_type'           => 'post',
+                'posts_per_page'      => 5,
+                'orderby'             => 'date',
+                'order'               => 'DESC',
+                'ignore_sticky_posts' => true,
+            ] );
+            if ( $latest_q->have_posts() ) : ?>
+            <div class="sidebar-widget topic-sidebar-latest">
+                <h3>Senaste inlägg</h3>
+                <ul class="topic-sidebar-list">
+                    <?php while ( $latest_q->have_posts() ) : $latest_q->the_post();
+                        $pt = get_the_terms( get_the_ID(), 'topic' );
+                        $tn = ( ! is_wp_error( $pt ) && ! empty( $pt ) ) ? $pt[0]->name : '';
+                    ?>
+                    <li>
+                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        <span class="sidebar-post-meta"><?php echo get_the_date(); ?><?php if ( $tn ) : ?> &middot; <?php echo esc_html( $tn ); ?><?php endif; ?></span>
+                    </li>
+                    <?php endwhile; wp_reset_postdata(); ?>
+                </ul>
+            </div>
+            <?php endif; ?>
+
+            <?php
+            if ( function_exists( 'wpblogtree_sidebar_newsletter_widget' ) ) {
+                wpblogtree_sidebar_newsletter_widget();
+            }
+            if ( function_exists( 'wpblogtree_sidebar_social_widget' ) ) {
+                wpblogtree_sidebar_social_widget();
+            }
+            ?>
+
+        </aside>
+
+    </div><!-- .layout-wrapper -->
 
 </section>
 
