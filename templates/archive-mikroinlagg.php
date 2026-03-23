@@ -30,6 +30,18 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
 
         <!-- ── Flöde ── -->
         <div class="main-content-area">
+
+        <?php if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) :
+            $current_user = wp_get_current_user();
+            $avatar_url   = get_avatar_url( $current_user->ID, [ 'size' => 80 ] );
+        ?>
+        <div class="mikro-compose-bar" id="mikro-compose-trigger" role="button" tabindex="0" aria-label="Skriv nytt mikroinlägg">
+            <img src="<?php echo esc_url( $avatar_url ); ?>" alt="" class="mikro-compose-avatar" width="40" height="40">
+            <span class="mikro-compose-placeholder">What's new?</span>
+            <button class="mikro-compose-post-btn" tabindex="-1" aria-hidden="true">Post</button>
+        </div>
+        <?php endif; ?>
+
         <div class="mikro-archive-feed">
 
         <?php if ( have_posts() ) : ?>
@@ -161,5 +173,90 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
     </div><!-- .layout-wrapper -->
 
 </section>
+
+<?php if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) :
+    $amnen       = get_terms( [ 'taxonomy' => 'mikro_amne',      'hide_empty' => false ] );
+    $plattformar = get_terms( [ 'taxonomy' => 'mikro_plattform', 'hide_empty' => false ] );
+    $current_user = wp_get_current_user();
+    $avatar_url   = get_avatar_url( $current_user->ID, [ 'size' => 80 ] );
+?>
+<!-- ── Compose-modal ── -->
+<div class="mikro-modal-overlay" id="mikro-modal" hidden aria-modal="true" role="dialog" aria-label="Skriv mikroinlägg">
+    <div class="mikro-modal">
+
+        <div class="mikro-modal-header">
+            <button class="mikro-modal-cancel" id="mikro-modal-cancel">Avbryt</button>
+            <span class="mikro-modal-title">Skriv Mikro Inlägg</span>
+            <button class="mikro-modal-post-btn" id="mikro-modal-submit" data-action="publish">Post</button>
+        </div>
+
+        <div class="mikro-modal-body">
+            <img src="<?php echo esc_url( $avatar_url ); ?>" alt="" class="mikro-compose-avatar" width="40" height="40">
+            <div class="mikro-modal-fields">
+
+                <textarea
+                    id="mikro-modal-content"
+                    class="mikro-modal-textarea"
+                    placeholder="What's new?"
+                    maxlength="500"
+                    rows="4"
+                    aria-label="Inläggstext"
+                ></textarea>
+                <div class="mikro-modal-char-count"><span id="mikro-modal-count">0</span> / 500</div>
+
+                <div class="mikro-modal-meta">
+                    <!-- Ämne -->
+                    <select id="mikro-modal-amne" class="mikro-modal-select" aria-label="Välj ämne">
+                        <option value="">Välj ämne...</option>
+                        <?php if ( ! is_wp_error( $amnen ) && $amnen ) :
+                            foreach ( $amnen as $a ) : ?>
+                            <option value="<?php echo esc_attr( $a->term_id ); ?>"><?php echo esc_html( $a->name ); ?></option>
+                        <?php endforeach; endif; ?>
+                    </select>
+
+                    <!-- Plattformar -->
+                    <?php if ( ! is_wp_error( $plattformar ) && $plattformar ) : ?>
+                    <div class="mikro-modal-platforms">
+                        <?php foreach ( $plattformar as $p ) :
+                            $slug = sanitize_title( $p->name );
+                            $icon = mikro_platform_icon( $slug );
+                        ?>
+                        <label class="mikro-modal-platform-label">
+                            <input type="checkbox" name="plattform[]" value="<?php echo esc_attr( $p->term_id ); ?>">
+                            <?php echo $icon; ?>
+                            <?php echo esc_html( $p->name ); ?>
+                        </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Länk -->
+                    <input
+                        type="url"
+                        id="mikro-modal-link"
+                        class="mikro-modal-input"
+                        placeholder="Länk till originalinlägg (valfritt)..."
+                    >
+
+                    <!-- Exklusivt -->
+                    <label class="mikro-modal-exclusive">
+                        <input type="checkbox" id="mikro-modal-exclusive">
+                        Publicera exklusivt på bloggen
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mikro-modal-footer">
+            <span class="mikro-modal-status" id="mikro-modal-status" aria-live="polite"></span>
+            <div class="mikro-modal-actions">
+                <button class="mikro-modal-draft-btn" id="mikro-modal-draft">Spara utkast</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<?php endif; ?>
 
 <?php get_footer(); ?>

@@ -2,6 +2,288 @@
    WPBlogTree Mikroinlägg – Frontend CSS (archive + single + widget)
    ============================================================ */
 
+/* ── Compose bar ────────────────────────────────────────────────────────────*/
+
+.mikro-compose-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e4e7ed);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.mikro-compose-bar:hover {
+    border-color: #adb5c0;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.mikro-compose-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.mikro-compose-placeholder {
+    flex: 1;
+    font-size: 15px;
+    color: #888;
+}
+
+.mikro-compose-post-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid #c8ccd4;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    pointer-events: none;
+}
+
+/* ── Modal overlay ──────────────────────────────────────────────────────────*/
+
+.mikro-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 99999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+@media (min-width: 600px) {
+    .mikro-modal-overlay {
+        align-items: center;
+    }
+}
+
+.mikro-modal-overlay.is-open {
+    opacity: 1;
+}
+
+.mikro-modal {
+    background: var(--card-bg, #fff);
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 580px;
+    max-height: 92vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(30px);
+    transition: transform 0.2s;
+}
+
+@media (min-width: 600px) {
+    .mikro-modal {
+        border-radius: 16px;
+        transform: translateY(0) scale(0.97);
+    }
+}
+
+.mikro-modal-overlay.is-open .mikro-modal {
+    transform: translateY(0) scale(1);
+}
+
+/* ── Modal header ── */
+.mikro-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color, #ebedf0);
+    position: sticky;
+    top: 0;
+    background: var(--card-bg, #fff);
+    border-radius: 16px 16px 0 0;
+    z-index: 1;
+}
+
+.mikro-modal-cancel {
+    background: none;
+    border: none;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 8px;
+}
+
+.mikro-modal-cancel:hover { color: #111; }
+
+.mikro-modal-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-color, #1a1a1a);
+}
+
+.mikro-modal-post-btn {
+    padding: 7px 20px;
+    border-radius: 20px;
+    border: none;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.mikro-modal-post-btn:hover  { background: #333; }
+.mikro-modal-post-btn:disabled { opacity: .5; cursor: default; }
+
+/* ── Modal body ── */
+.mikro-modal-body {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    flex: 1;
+}
+
+.mikro-modal-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mikro-modal-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-color, #1a1a1a);
+    resize: none;
+    background: transparent;
+    line-height: 1.55;
+    min-height: 80px;
+}
+
+.mikro-modal-textarea::placeholder { color: #aaa; }
+
+.mikro-modal-char-count {
+    font-size: 12px;
+    color: #999;
+    text-align: right;
+}
+
+/* ── Modal meta ── */
+.mikro-modal-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border-color, #ebedf0);
+    padding-top: 10px;
+}
+
+.mikro-modal-select,
+.mikro-modal-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #dde1e7;
+    border-radius: 7px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #333);
+}
+
+.mikro-modal-select:focus,
+.mikro-modal-input:focus {
+    border-color: #0073aa;
+    outline: none;
+}
+
+.mikro-modal-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mikro-modal-platform-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid #dde1e7;
+    border-radius: 20px;
+    transition: background 0.12s, border-color 0.12s;
+    color: var(--text-color, #333);
+}
+
+.mikro-modal-platform-label:has(input:checked) {
+    background: #e8f0fe;
+    border-color: #b3c8f5;
+    color: #1a56b0;
+}
+
+.mikro-modal-platform-label input { display: none; }
+
+.mikro-modal-platform-label svg { width: 13px; height: 13px; }
+
+.mikro-modal-exclusive {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+}
+
+/* ── Modal footer ── */
+.mikro-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-color, #ebedf0);
+    background: var(--card-bg, #fff);
+    position: sticky;
+    bottom: 0;
+}
+
+.mikro-modal-draft-btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid #c8ccd4;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s;
+}
+
+.mikro-modal-draft-btn:hover    { background: #f0f0f1; }
+.mikro-modal-draft-btn:disabled { opacity: .5; cursor: default; }
+
+.mikro-modal-status {
+    font-size: 13px;
+}
+
+.mikro-status-error   { color: #c0392b; }
+.mikro-status-success { color: #1a7a4a; font-weight: 600; }
+.mikro-status-loading { color: #888; }
+
 /* ── Archive ────────────────────────────────────────────────────────────────*/
 
 .mikro-archive-feed {

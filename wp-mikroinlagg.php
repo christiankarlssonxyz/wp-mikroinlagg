@@ -42,6 +42,14 @@ function mikro_template_include( string $template ): string {
 // ── Frontend assets ──────────────────────────────────────────────────────────
 add_action( 'wp_enqueue_scripts', 'mikro_enqueue_frontend' );
 function mikro_enqueue_frontend(): void {
+    // Widget CSS on all pages
+    wp_enqueue_style(
+        'wp-mikroinlagg-widget',
+        MIKRO_URL . 'assets/css/frontend.css',
+        [],
+        MIKRO_VERSION
+    );
+
     if ( is_singular( 'mikroinlagg' ) || is_post_type_archive( 'mikroinlagg' ) ) {
         wp_enqueue_style(
             'wp-mikroinlagg',
@@ -50,13 +58,81 @@ function mikro_enqueue_frontend(): void {
             MIKRO_VERSION
         );
     }
-    // Always load widget CSS (widget can appear on any page)
-    wp_enqueue_style(
-        'wp-mikroinlagg-widget',
-        MIKRO_URL . 'assets/css/frontend.css',
-        [],
-        MIKRO_VERSION
-    );
+
+    // Compose modal JS — bara på arkivsidan för inloggade redaktörer
+    if ( is_post_type_archive( 'mikroinlagg' ) && is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
+        wp_enqueue_script(
+            'wp-mikroinlagg-compose',
+            MIKRO_URL . 'assets/js/compose.js',
+            [],
+            MIKRO_VERSION,
+            true
+        );
+        wp_localize_script( 'wp-mikroinlagg-compose', 'mikroCompose', [
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'mikro_compose' ),
+        ] );
+    }
+}
+
+// ── AJAX: frontend compose ────────────────────────────────────────────────────
+add_action( 'wp_ajax_mikro_compose', 'mikro_ajax_compose' );
+function mikro_ajax_compose(): void {
+    if ( ! check_ajax_referer( 'mikro_compose', 'nonce', false ) ) {
+        wp_send_json_error( 'Säkerhetsfel.', 403 );
+    }
+    if ( ! current_user_can( 'edit_posts' ) ) {
+        wp_send_json_error( 'Behörighet saknas.', 403 );
+    }
+
+    $content = mb_substr( sanitize_textarea_field( $_POST['content'] ?? '' ), 0, 500 );
+    $title   = sanitize_text_field( $_POST['title'] ?? '' );
+    $action  = sanitize_key( $_POST['publish_action'] ?? 'draft' );
+    $status  = ( $action === 'publish' ) ? 'publish' : 'draft';
+
+    if ( empty( $content ) ) {
+        wp_send_json_error( 'Innehåll saknas.' );
+    }
+
+    if ( empty( $title ) ) {
+        $title = mb_substr( wp_strip_all_tags( $content ), 0, 70 );
+        if ( mb_strlen( $content ) > 70 ) $title .= '…';
+    }
+
+    $post_id = wp_insert_post( [
+        'post_title'   => $title,
+        'post_content' => $content,
+        'post_status'  => $status,
+        'post_type'    => 'mikroinlagg',
+        'post_author'  => get_current_user_id(),
+    ], true );
+
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( 'Kunde inte spara inlägget.' );
+    }
+
+    // Ämne
+    if ( ! empty( $_POST['amne'] ) ) {
+        wp_set_post_terms( $post_id, [ (int) $_POST['amne'] ], 'mikro_amne' );
+    }
+
+    // Plattform
+    if ( ! empty( $_POST['plattform'] ) && is_array( $_POST['plattform'] ) ) {
+        wp_set_post_terms( $post_id, array_map( 'intval', $_POST['plattform'] ), 'mikro_plattform' );
+    }
+
+    // Meta
+    if ( ! empty( $_POST['originallank'] ) ) {
+        update_post_meta( $post_id, 'mikro_originallank', esc_url_raw( $_POST['originallank'] ) );
+    }
+    update_post_meta( $post_id, 'mikro_exklusivt', ! empty( $_POST['exklusivt'] ) ? 1 : 0 );
+    update_post_meta( $post_id, 'mikro_pinned', 0 );
+
+    wp_send_json_success( [
+        'status'    => $status,
+        'permalink' => get_permalink( $post_id ),
+        'message'   => $status === 'publish' ? 'Mikroinlägg publicerat!' : 'Utkast sparat!',
+    ] );
 }
 
 // ── Swedish relative time helper ─────────────────────────────────────────────
