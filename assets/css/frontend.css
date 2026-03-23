@@ -1,0 +1,463 @@
+/* ============================================================
+   WPBlogTree Mikroinlägg – Frontend CSS (archive + single + widget)
+   ============================================================ */
+
+/* ── Archive ────────────────────────────────────────────────────────────────*/
+
+.mikro-archive-header {
+    text-align: center;
+    padding: 40px 20px 20px;
+}
+
+.mikro-archive-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.mikro-archive-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #2d3748;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.mikro-archive-desc {
+    color: #666;
+    font-size: 15px;
+    margin: 0;
+}
+
+.mikro-archive-feed {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ── Archive card ── */
+.mikro-card {
+    border-bottom: 1px solid #ebedf0;
+    padding: 20px 0;
+}
+
+.mikro-card:last-child {
+    border-bottom: none;
+}
+
+.mikro-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.mikro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    background: #eef0f4;
+    color: #444;
+    border: 1px solid #dde1e7;
+    transition: background 0.15s;
+}
+
+.mikro-badge:hover {
+    background: #dde1e7;
+    color: #222;
+}
+
+.mikro-badge-amne {
+    background: #e8f0fe;
+    color: #1a56b0;
+    border-color: #c3d6f7;
+}
+
+.mikro-badge-amne:hover {
+    background: #c3d6f7;
+}
+
+.mikro-badge-platform {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.mikro-badge-platform svg {
+    width: 12px;
+    height: 12px;
+}
+
+.mikro-card-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.mikro-card-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.mikro-card-title a:hover {
+    color: #1a56b0;
+}
+
+.mikro-card-content {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.mikro-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #1a56b0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mikro-card-link:hover {
+    text-decoration: underline;
+}
+
+/* ── Single ────────────────────────────────────────────────────────────────*/
+
+.mikro-single-wrap {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 16px 60px;
+}
+
+.mikro-single-card {
+    background: #fff;
+    border: 1px solid #e4e7ed;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.mikro-single-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid #ebedf0;
+}
+
+.mikro-author-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #2d6a4f;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.mikro-author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mikro-author-info {
+    flex: 1;
+}
+
+.mikro-author-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin: 0 0 2px;
+}
+
+.mikro-author-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+.mikro-single-content {
+    padding: 20px 20px 16px;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    word-break: break-word;
+}
+
+.mikro-original-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 20px 16px;
+    font-size: 13px;
+    color: #1a56b0;
+    text-decoration: none;
+}
+
+.mikro-original-link:hover {
+    text-decoration: underline;
+}
+
+.mikro-single-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 20px 16px;
+}
+
+.mikro-single-actions {
+    display: flex;
+    gap: 4px;
+    padding: 12px 20px;
+    border-top: 1px solid #ebedf0;
+}
+
+.mikro-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid #dde1e7;
+    border-radius: 5px;
+    background: transparent;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s;
+}
+
+.mikro-action-btn:hover {
+    background: #f5f6f7;
+    border-color: #c8ccd4;
+    color: #333;
+}
+
+.mikro-action-btn.is-liked {
+    color: #e0245e;
+    border-color: #f9b8cc;
+    background: #fff0f5;
+}
+
+.mikro-single-comments {
+    padding: 20px;
+    border-top: 1px solid #ebedf0;
+}
+
+.mikro-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #555;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.mikro-back-link:hover {
+    color: #1a56b0;
+}
+
+/* ── Widget ────────────────────────────────────────────────────────────────*/
+
+.mikro-widget {
+    background: #fff;
+    border: 1px solid #e0e3e8;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.mikro-widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    background: #2d3748;
+    color: #fff;
+}
+
+.mikro-widget-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+}
+
+.mikro-widget-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #4a5568;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.mikro-widget-new-btn {
+    display: block;
+    background: #1e6db5;
+    color: #fff;
+    text-align: center;
+    padding: 11px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    border-bottom: 1px solid #e0e3e8;
+    transition: background 0.15s;
+}
+
+.mikro-widget-new-btn:hover {
+    background: #1a5f9e;
+    color: #fff;
+}
+
+.mikro-widget-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mikro-widget-item {
+    border-bottom: 1px solid #ebedf0;
+    padding: 0;
+}
+
+.mikro-widget-item:last-child {
+    border-bottom: none;
+}
+
+.mikro-widget-link {
+    display: block;
+    padding: 12px 16px 4px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a3a6b;
+    text-decoration: none;
+    line-height: 1.35;
+    transition: color 0.12s;
+}
+
+.mikro-widget-link:hover {
+    color: #1e6db5;
+}
+
+.mikro-widget-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 2px 16px 12px;
+    font-size: 12px;
+    color: #888;
+}
+
+.mikro-widget-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mikro-widget-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.mikro-widget-all-link {
+    display: block;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #1a56b0;
+    text-decoration: none;
+    border-top: 1px solid #ebedf0;
+    font-weight: 500;
+}
+
+.mikro-widget-all-link:hover {
+    text-decoration: underline;
+}
+
+.mikro-widget-empty {
+    padding: 16px;
+    color: #888;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* ── Platform colors in widget ── */
+.mikro-plattform-mastodon   { color: #6364ff; }
+.mikro-plattform-threads    { color: #333;    }
+.mikro-plattform-facebook   { color: #1877f2; }
+.mikro-plattform-mikroblogg { color: #15803d; }
+
+/* ── Pagination ── */
+.mikro-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 0 40px;
+}
+
+.mikro-pagination a,
+.mikro-pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #dde1e7;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.12s;
+}
+
+.mikro-pagination a:hover {
+    background: #f0f3f7;
+}
+
+.mikro-pagination .current {
+    background: #1e6db5;
+    color: #fff;
+    border-color: #1a5f9e;
+}

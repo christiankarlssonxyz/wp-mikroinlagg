@@ -1,0 +1,388 @@
+/* ============================================================
+   WPBlogTree Mikroinlägg – Admin CSS
+   ============================================================ */
+
+/* ── Wrap ── */
+.mikro-admin-wrap {
+    max-width: 1100px;
+    margin: 20px 20px 40px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ── Header ── */
+.mikro-admin-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #2d3748;
+    color: #fff;
+    padding: 16px 24px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+}
+
+.mikro-admin-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #4a5568;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.mikro-admin-title {
+    color: #fff !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-bottom: none !important;
+    line-height: 1.2 !important;
+}
+
+/* ── Layout ── */
+#mikro-form {
+    background: #fff;
+    border: 1px solid #dde1e7;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 28px;
+}
+
+.mikro-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .mikro-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Field groups ── */
+.mikro-field-group {
+    margin-bottom: 20px;
+}
+
+.mikro-label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+/* ── Inputs ── */
+.mikro-input,
+.mikro-title-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 12px;
+    border: 1px solid #c8ccd4;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    background: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.mikro-input:focus,
+.mikro-title-input:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.15);
+    outline: none;
+}
+
+.mikro-title-input {
+    font-size: 15px;
+}
+
+.mikro-input-sm {
+    padding: 6px 10px;
+    border: 1px solid #c8ccd4;
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #333;
+    background: #fff;
+}
+
+.mikro-input-sm:focus {
+    border-color: #0073aa;
+    outline: none;
+}
+
+.mikro-select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #c8ccd4;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    background: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+}
+
+.mikro-select:focus {
+    border-color: #0073aa;
+    outline: none;
+}
+
+/* ── Editor ── */
+.mikro-editor-wrap {
+    border: 1px solid #c8ccd4;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.mikro-toolbar {
+    display: flex;
+    gap: 2px;
+    padding: 6px 8px;
+    background: #f5f6f7;
+    border-bottom: 1px solid #e0e3e8;
+}
+
+.mikro-tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    color: #444;
+    transition: background 0.1s, border-color 0.1s;
+    padding: 0;
+}
+
+.mikro-tool:hover {
+    background: #e8eaed;
+    border-color: #c8ccd4;
+}
+
+.mikro-textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    padding: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #333;
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+.mikro-char-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 6px 10px;
+    background: #f9fafb;
+    border-top: 1px solid #e8eaed;
+    font-size: 12px;
+    color: #888;
+}
+
+#mikro-char-count.over-limit {
+    color: #c0392b;
+    font-weight: 600;
+}
+
+/* ── Actions ── */
+.mikro-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.mikro-or {
+    color: #888;
+    font-size: 13px;
+}
+
+.mikro-btn-draft {
+    background: #f0f0f1 !important;
+    border-color: #c8ccd4 !important;
+    color: #333 !important;
+    font-size: 14px !important;
+    padding: 8px 18px !important;
+    height: auto !important;
+    border-radius: 5px !important;
+}
+
+.mikro-btn-draft:hover {
+    background: #e0e1e2 !important;
+}
+
+.mikro-btn-publish {
+    font-size: 14px !important;
+    padding: 8px 22px !important;
+    height: auto !important;
+    border-radius: 5px !important;
+    background: #1e6db5 !important;
+    border-color: #1a5f9e !important;
+}
+
+.mikro-btn-publish:hover {
+    background: #1a5f9e !important;
+}
+
+/* ── Sidebar boxes ── */
+.mikro-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.mikro-sidebar-box {
+    border: 1px solid #e0e3e8;
+    border-radius: 6px;
+    padding: 16px;
+    background: #fafbfc;
+    margin-bottom: 12px;
+}
+
+.mikro-box-title {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    border: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* ── Tags ── */
+.mikro-tag-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mikro-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 0;
+}
+
+.mikro-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px 3px 10px;
+    background: #e8edf2;
+    border: 1px solid #c8d0da;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
+}
+
+.mikro-tag-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    border-radius: 50%;
+    transition: color 0.1s, background 0.1s;
+}
+
+.mikro-tag-remove:hover {
+    color: #c0392b;
+    background: rgba(192, 57, 43, 0.1);
+}
+
+/* ── Platforms ── */
+.mikro-platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.mikro-platform-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+}
+
+.mikro-platform-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ── URL + exclusive ── */
+.mikro-check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.mikro-check-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ── Time ── */
+.mikro-time-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mikro-time-label {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.mikro-calendar-icon {
+    font-size: 16px;
+    opacity: 0.6;
+}
+
+/* ── Notice overrides ── */
+.mikro-admin-wrap .notice {
+    margin: 0 0 16px;
+    border-radius: 5px;
+}
