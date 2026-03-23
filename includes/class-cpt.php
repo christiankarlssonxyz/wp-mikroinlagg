@@ -5,10 +5,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Mikro_CPT {
 
+    /** Standardplattformar som alltid ska finnas. */
+    const DEFAULT_PLATFORMS = [
+        'mastodon'   => 'Mastodon',
+        'threads'    => 'Threads',
+        'facebook'   => 'Facebook',
+        'x'          => 'X',
+        'mikroblogg' => 'Mikroblogg',
+    ];
+
     public static function init(): void {
-        add_action( 'init', [ __CLASS__, 'register_post_type' ] );
-        add_action( 'init', [ __CLASS__, 'register_taxonomies' ] );
-        add_action( 'init', [ __CLASS__, 'register_meta' ] );
+        add_action( 'init',       [ __CLASS__, 'register_post_type' ] );
+        add_action( 'init',       [ __CLASS__, 'register_taxonomies' ] );
+        add_action( 'init',       [ __CLASS__, 'register_meta' ] );
+        add_action( 'admin_init', [ __CLASS__, 'seed_platforms' ] );
     }
 
     public static function register_post_type(): void {
@@ -117,6 +127,26 @@ class Mikro_CPT {
                 'show_in_rest' => true,
             ], $args ) );
         }
+    }
+
+    /**
+     * Säkerställer att standardplattformarna finns i taxonomin.
+     * Körs vid admin_init – skapar saknade termer, tar ej bort befintliga.
+     */
+    public static function seed_platforms(): void {
+        // Kör bara en gång per version (undviker onödiga DB-anrop varje sidladdning)
+        $seeded = get_option( 'mikro_platforms_seeded', '' );
+        if ( $seeded === MIKRO_VERSION ) {
+            return;
+        }
+
+        foreach ( self::DEFAULT_PLATFORMS as $slug => $name ) {
+            if ( ! term_exists( $name, 'mikro_plattform' ) ) {
+                wp_insert_term( $name, 'mikro_plattform', [ 'slug' => $slug ] );
+            }
+        }
+
+        update_option( 'mikro_platforms_seeded', MIKRO_VERSION );
     }
 }
 

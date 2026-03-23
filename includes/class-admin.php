@@ -90,8 +90,10 @@ class Mikro_Admin {
         $amnen       = get_terms( [ 'taxonomy' => 'mikro_amne',      'hide_empty' => false ] );
         $plattformar = get_terms( [ 'taxonomy' => 'mikro_plattform', 'hide_empty' => false ] );
 
-        // Fallback platform list when no terms exist yet
-        $default_platforms = [ 'Mastodon', 'Threads', 'Facebook', 'Mikroblogg' ];
+        // Seed saknade standardplattformar direkt (ifall admin_init hunnit köra)
+        Mikro_CPT::seed_platforms();
+        // Hämta alltid från taxonomin – seed ovan garanterar att de finns
+        $plattformar = get_terms( [ 'taxonomy' => 'mikro_plattform', 'hide_empty' => false ] );
 
         // Status messages
         $message = '';
@@ -229,15 +231,6 @@ class Mikro_Admin {
                                     <label class="mikro-platform-label">
                                         <input type="checkbox" name="mikro_plattform[]" value="<?php echo esc_attr( $p->term_id ); ?>">
                                         <?php echo esc_html( $p->name ); ?>
-                                    </label>
-                                <?php
-                                    endforeach;
-                                else :
-                                    foreach ( $default_platforms as $p ) :
-                                ?>
-                                    <label class="mikro-platform-label">
-                                        <input type="checkbox" name="mikro_plattform_new[]" value="<?php echo esc_attr( strtolower( $p ) ); ?>">
-                                        <?php echo esc_html( $p ); ?>
                                     </label>
                                 <?php
                                     endforeach;
