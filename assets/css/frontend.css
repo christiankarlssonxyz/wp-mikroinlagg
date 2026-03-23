@@ -63,6 +63,11 @@
     transition: opacity 0.2s;
 }
 
+/* Förhindra att display:flex åsidosätter [hidden]-attributet */
+.mikro-modal-overlay[hidden] {
+    display: none !important;
+}
+
 @media (min-width: 600px) {
     .mikro-modal-overlay {
         align-items: center;
