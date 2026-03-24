@@ -1,0 +1,26 @@
+name: Skapa release-zip
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skapa wp-mikroinlagg.zip
+        run: |
+          cd ..
+          zip -r wp-mikroinlagg.zip wp-mikroinlagg \
+            --exclude "*.git*" \
+            --exclude "wp-mikroinlagg/.github/*" \
+            --exclude "*__pycache__*" \
+            --exclude "*.DS_Store"
+          mv wp-mikroinlagg.zip wp-mikroinlagg/
+
+      - name: Bifoga zip till releasen
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wp-mikroinlagg.zip
