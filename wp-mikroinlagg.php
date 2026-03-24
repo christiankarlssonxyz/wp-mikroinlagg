@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPBlogTree Mikroinlägg
- * Plugin URI:  https://github.com/ckarlsson/wp-mikroinlagg
+ * Plugin URI:  https://github.com/christiankarlssonxyz/wp-mikroinlagg
  * Description: Mikroinlägg – ett eget socialt flöde på bloggen. Korta inlägg (max 500 tecken) med ämne, taggar, plattform och originallänk.
  * Version:     1.2.0
  * Author:      Christian Karlsson
@@ -24,7 +24,7 @@ define( 'MIKRO_VERSION', '1.2.0' );
 // ── GitHub-uppdateringar via plugin-update-checker ────────────────────────────
 require_once MIKRO_DIR . 'vendor/plugin-update-checker/load-v5p5.php';
 $mikro_update_checker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-    'https://github.com/ckarlsson/wp-mikroinlagg/',
+    'https://github.com/christiankarlssonxyz/wp-mikroinlagg/',
     __FILE__,
     'wp-mikroinlagg'
 );
