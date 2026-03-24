@@ -56,7 +56,19 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
                 $amne     = ( ! is_wp_error( $amnen )       && $amnen )       ? $amnen[0]       : null;
                 $platform = ( ! is_wp_error( $plattformar ) && $plattformar ) ? $plattformar[0] : null;
             ?>
-                <article class="mikro-card" id="post-<?php the_ID(); ?>">
+                <?php
+                $platform_color_attr = $platform ? mikro_platform_color( sanitize_title( $platform->name ) ) : '#2d3748';
+                $platform_icon_attr  = $platform ? mikro_platform_icon( sanitize_title( $platform->name ), 22 ) : mikro_platform_icon( 'mikroblogg', 22 );
+                $post_content_plain  = mb_substr( wp_strip_all_tags( get_the_content() ), 0, 300 );
+                ?>
+                <article class="mikro-card" id="post-<?php the_ID(); ?>"
+                    data-post-id="<?php the_ID(); ?>"
+                    data-author="<?php echo esc_attr( get_the_author() ); ?>"
+                    data-time="<?php echo esc_attr( $time_label ); ?>"
+                    data-content="<?php echo esc_attr( $post_content_plain ); ?>"
+                    data-platform-color="<?php echo esc_attr( $platform_color_attr ); ?>"
+                    data-platform-icon="<?php echo esc_attr( $platform_icon_attr ); ?>"
+                >
 
                     <div class="mikro-card-row">
 
@@ -111,6 +123,28 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
                                 </a>
                             <?php endif; ?>
 
+                            <!-- Action bar -->
+                            <?php
+                            $like_count = (int) get_post_meta( get_the_ID(), 'wpblogtree_likes', true );
+                            $comment_count = get_comments_number( get_the_ID() );
+                            ?>
+                            <div class="mikro-card-actions">
+                                <button class="mikro-action-btn mikro-like-btn" data-post-id="<?php the_ID(); ?>" aria-label="Gilla" aria-pressed="false">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                    <span class="mikro-like-count"><?php echo $like_count > 0 ? $like_count : ''; ?></span>
+                                    <span class="mikro-action-label">Gilla</span>
+                                </button>
+                                <button class="mikro-action-btn mikro-comment-btn" data-post-id="<?php the_ID(); ?>" aria-label="Kommentera">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    <span class="mikro-comment-count-<?php the_ID(); ?>"><?php if ( $comment_count > 0 ) echo (int) $comment_count; ?></span>
+                                    <span class="mikro-action-label">Kommentera</span>
+                                </button>
+                                <button class="mikro-action-btn mikro-share-btn" data-url="<?php the_permalink(); ?>" data-title="<?php echo esc_attr( get_the_title() ); ?>" aria-label="Dela">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                                    <span class="mikro-action-label">Dela</span>
+                                </button>
+                            </div>
+
                         </div><!-- .mikro-card-body -->
                     </div><!-- .mikro-card-row -->
 
@@ -160,6 +194,7 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
                 'orderby'             => 'date',
                 'order'               => 'DESC',
                 'ignore_sticky_posts' => true,
+                'no_found_rows'       => true,
             ] );
             if ( $latest_q->have_posts() ) : ?>
             <div class="sidebar-widget topic-sidebar-latest">
@@ -175,6 +210,33 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
                     </li>
                     <?php endwhile; wp_reset_postdata(); ?>
                 </ul>
+            </div>
+            <?php endif; ?>
+
+            <?php
+            $popular_q = new WP_Query( [
+                'post_type'           => 'post',
+                'posts_per_page'      => 5,
+                'meta_key'            => 'wpblogtree_views',
+                'orderby'             => 'meta_value_num',
+                'order'               => 'DESC',
+                'ignore_sticky_posts' => true,
+                'no_found_rows'       => true,
+            ] );
+            if ( $popular_q->have_posts() ) : ?>
+            <div class="sidebar-widget topic-sidebar-popular">
+                <h3>Mest lästa</h3>
+                <ol class="topic-sidebar-ranked">
+                    <?php while ( $popular_q->have_posts() ) : $popular_q->the_post();
+                        $pt = get_the_terms( get_the_ID(), 'topic' );
+                        $tn = ( ! is_wp_error( $pt ) && ! empty( $pt ) ) ? $pt[0]->name : '';
+                    ?>
+                    <li><div>
+                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        <span class="sidebar-post-meta"><?php echo get_the_date(); ?><?php if ( $tn ) : ?> &middot; <?php echo esc_html( $tn ); ?><?php endif; ?></span>
+                    </div></li>
+                    <?php endwhile; wp_reset_postdata(); ?>
+                </ol>
             </div>
             <?php endif; ?>
 
@@ -276,6 +338,63 @@ $color_style = 'style="--topic-color:' . esc_attr( $hero_color ) . '"';
 
     </div>
 </div>
+<?php endif; ?>
+
+<?php if ( is_user_logged_in() ) :
+    $cu         = wp_get_current_user();
+    $cu_avatar  = get_avatar_url( $cu->ID, [ 'size' => 80 ] );
+    $cu_name    = esc_html( $cu->display_name );
+?>
+<!-- ── Comment-modal ── -->
+<div class="mikro-reply-overlay" id="mikro-reply-modal" hidden aria-modal="true" role="dialog" aria-label="Svara på mikroinlägg">
+    <div class="mikro-reply-modal">
+
+        <div class="mikro-reply-header">
+            <button class="mikro-reply-cancel" id="mikro-reply-cancel">Avbryt</button>
+            <span class="mikro-reply-title">Svar</span>
+            <button class="mikro-reply-post-btn" id="mikro-reply-submit">Post</button>
+        </div>
+
+        <div class="mikro-reply-body">
+
+            <!-- Original post (fylls i av JS) -->
+            <div class="mikro-reply-thread-row">
+                <div class="mikro-reply-avatar-col">
+                    <span class="mikro-reply-orig-avatar" id="mikro-reply-orig-avatar"></span>
+                    <span class="mikro-reply-thread-line" aria-hidden="true"></span>
+                </div>
+                <div class="mikro-reply-orig-content">
+                    <div class="mikro-reply-orig-author" id="mikro-reply-orig-author"></div>
+                    <div class="mikro-reply-orig-text" id="mikro-reply-orig-text"></div>
+                </div>
+            </div>
+
+            <!-- Svarsfält -->
+            <div class="mikro-reply-compose-row">
+                <div class="mikro-reply-avatar-col">
+                    <img src="<?php echo esc_url( $cu_avatar ); ?>" alt="" class="mikro-reply-user-avatar" width="38" height="38">
+                </div>
+                <div class="mikro-reply-compose-content">
+                    <span class="mikro-reply-user-name"><?php echo $cu_name; ?></span>
+                    <textarea
+                        id="mikro-reply-content"
+                        class="mikro-reply-textarea"
+                        placeholder="Svara <?php echo $cu_name; ?>..."
+                        rows="3"
+                        aria-label="Skriv svar"
+                    ></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mikro-reply-footer">
+            <span class="mikro-reply-status" id="mikro-reply-status" aria-live="polite"></span>
+        </div>
+
+    </div>
+</div>
+<input type="hidden" id="mikro-reply-post-id" value="">
 <?php endif; ?>
 
 <?php get_footer(); ?>

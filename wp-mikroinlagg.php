@@ -3,7 +3,7 @@
  * Plugin Name: WPBlogTree Mikroinlägg
  * Plugin URI:  https://github.com/ckarlsson/wp-mikroinlagg
  * Description: Mikroinlägg – ett eget socialt flöde på bloggen. Korta inlägg (max 500 tecken) med ämne, taggar, plattform och originallänk.
- * Version:     1.0.0
+ * Version:     1.2.0
  * Author:      Christian Karlsson
  * Author URI:  https://karlsson.xyz
  * License:     GPL-2.0-or-later
@@ -19,7 +19,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'MIKRO_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'MIKRO_URL',     plugin_dir_url( __FILE__ ) );
-define( 'MIKRO_VERSION', '1.0.0' );
+define( 'MIKRO_VERSION', '1.2.0' );
+
+// ── GitHub-uppdateringar via plugin-update-checker ────────────────────────────
+require_once MIKRO_DIR . 'vendor/plugin-update-checker/load-v5p5.php';
+$mikro_update_checker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+    'https://github.com/ckarlsson/wp-mikroinlagg/',
+    __FILE__,
+    'wp-mikroinlagg'
+);
+$mikro_update_checker->setBranch( 'main' );
+$mikro_update_checker->getVcsApi()->enableReleaseAssets();
 
 require_once MIKRO_DIR . 'includes/class-cpt.php';
 require_once MIKRO_DIR . 'includes/class-admin.php';
@@ -59,8 +69,8 @@ function mikro_enqueue_frontend(): void {
         );
     }
 
-    // Compose modal JS — bara på arkivsidan för inloggade redaktörer
-    if ( is_post_type_archive( 'mikroinlagg' ) && is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
+    // JS på arkivsidan: compose-modal för redaktörer, gilla/dela för alla inloggade
+    if ( is_post_type_archive( 'mikroinlagg' ) && is_user_logged_in() ) {
         wp_enqueue_script(
             'wp-mikroinlagg-compose',
             MIKRO_URL . 'assets/js/compose.js',
@@ -69,8 +79,28 @@ function mikro_enqueue_frontend(): void {
             true
         );
         wp_localize_script( 'wp-mikroinlagg-compose', 'mikroCompose', [
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'mikro_compose' ),
+            'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+            'nonce'        => wp_create_nonce( 'mikro_compose' ),
+            'likesNonce'   => wp_create_nonce( 'wpblogtree_nonce' ),
+            'commentNonce' => wp_create_nonce( 'mikro_comment' ),
+            'isLoggedIn'   => true,
+            'canEdit'      => current_user_can( 'edit_posts' ),
+        ] );
+    } elseif ( is_post_type_archive( 'mikroinlagg' ) ) {
+        // Utloggade: bara dela-funktionen (ingen AJAX-nonce behövs)
+        wp_enqueue_script(
+            'wp-mikroinlagg-compose',
+            MIKRO_URL . 'assets/js/compose.js',
+            [],
+            MIKRO_VERSION,
+            true
+        );
+        wp_localize_script( 'wp-mikroinlagg-compose', 'mikroCompose', [
+            'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+            'nonce'      => '',
+            'likesNonce' => '',
+            'isLoggedIn' => false,
+            'canEdit'    => false,
         ] );
     }
 }
@@ -132,6 +162,50 @@ function mikro_ajax_compose(): void {
         'status'    => $status,
         'permalink' => get_permalink( $post_id ),
         'message'   => $status === 'publish' ? 'Mikroinlägg publicerat!' : 'Utkast sparat!',
+    ] );
+}
+
+// ── AJAX: frontend comment ────────────────────────────────────────────────────
+add_action( 'wp_ajax_mikro_comment', 'mikro_ajax_comment' );
+function mikro_ajax_comment(): void {
+    if ( ! check_ajax_referer( 'mikro_comment', 'nonce', false ) ) {
+        wp_send_json_error( 'Säkerhetsfel.', 403 );
+    }
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Du måste vara inloggad.', 403 );
+    }
+
+    $post_id = (int) ( $_POST['post_id'] ?? 0 );
+    $content = sanitize_textarea_field( $_POST['content'] ?? '' );
+
+    if ( ! $post_id || empty( $content ) ) {
+        wp_send_json_error( 'Ogiltiga uppgifter.' );
+    }
+
+    $post = get_post( $post_id );
+    if ( ! $post || $post->post_type !== 'mikroinlagg' ) {
+        wp_send_json_error( 'Inlägget hittades inte.' );
+    }
+
+    $user = wp_get_current_user();
+    $comment_id = wp_insert_comment( [
+        'comment_post_ID'      => $post_id,
+        'comment_content'      => $content,
+        'comment_author'       => $user->display_name,
+        'comment_author_email' => $user->user_email,
+        'comment_author_url'   => $user->user_url,
+        'user_id'              => $user->ID,
+        'comment_approved'     => 1,
+        'comment_type'         => 'comment',
+    ] );
+
+    if ( ! $comment_id ) {
+        wp_send_json_error( 'Kunde inte spara kommentaren.' );
+    }
+
+    wp_send_json_success( [
+        'message' => 'Svar publicerat!',
+        'count'   => (int) get_comments_number( $post_id ),
     ] );
 }
 
